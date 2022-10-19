@@ -1,17 +1,17 @@
 import React from "react";
 
-const TextInput = ({ value }: { value: "first" | "last" }) => {
+const TextInput = ({ field }: { field: "first" | "last" }) => {
   return (
     <div className="field">
-      {value}: <input />
+      {field}: <input />
     </div>
   );
 };
 
-const Display = ({ value }: { value: "first" | "last" }) => {
+const Display = ({ field }: { field: "first" | "last" }) => {
   return (
     <div className="value">
-      {value}: {""}
+      {field}: {""}
     </div>
   );
 };
@@ -20,8 +20,8 @@ const FormContainer = () => {
   return (
     <div className="container">
       <h5>FormContainer</h5>
-      <TextInput value="first" />
-      <TextInput value="last" />
+      <TextInput field="first" />
+      <TextInput field="last" />
     </div>
   );
 };
@@ -30,8 +30,8 @@ const DisplayContainer = () => {
   return (
     <div className="container">
       <h5>DisplayContainer</h5>
-      <Display value="first" />
-      <Display value="last" />
+      <Display field="first" />
+      <Display field="last" />
     </div>
   );
 };
