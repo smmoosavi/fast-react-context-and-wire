@@ -1,17 +1,35 @@
-import React from "react";
+import { useWire, useWireValue, Wire } from "@forminator/react-wire";
+import React, { createContext, useCallback, useContext } from "react";
+
+type State = { first: string; last: string };
+const StoreContext = createContext<Wire<State> | undefined>(undefined);
 
 const TextInput = ({ field }: { field: "first" | "last" }) => {
+  const state$ = useContext(StoreContext)!;
+  const state = useWireValue(state$);
+  const value = state[field];
   return (
     <div className="field">
-      {field}: <input />
+      {field}:{" "}
+      <input
+        value={value}
+        onChange={(e) => {
+          const state = state$.getValue();
+
+          state$.setValue({ ...state, [field]: e.target.value });
+        }}
+      />
     </div>
   );
 };
 
 const Display = ({ field }: { field: "first" | "last" }) => {
+  const state$ = useContext(StoreContext)!;
+  const state = useWireValue(state$);
+  const value = state[field];
   return (
     <div className="value">
-      {field}: {""}
+      {field}: {value}
     </div>
   );
 };
@@ -47,11 +65,14 @@ const ContentContainer = () => {
 };
 
 function App() {
+  const state$ = useWire(null, { first: "", last: "" });
   return (
-    <div className="container">
-      <h5>App</h5>
-      <ContentContainer />
-    </div>
+    <StoreContext.Provider value={state$}>
+      <div className="container">
+        <h5>App</h5>
+        <ContentContainer />
+      </div>
+    </StoreContext.Provider>
   );
 }
 
