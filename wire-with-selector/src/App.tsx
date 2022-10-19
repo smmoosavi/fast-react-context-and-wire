@@ -1,13 +1,33 @@
-import { useWire, useWireValue, Wire } from "@forminator/react-wire";
+import {
+  useSelector,
+  useWire,
+  useWireValue,
+  Wire,
+} from "@forminator/react-wire";
 import React, { createContext, useCallback, useContext } from "react";
 
 type State = { first: string; last: string };
 const StoreContext = createContext<Wire<State> | undefined>(undefined);
 
+function useFieldSelector(state$: Wire<State>, field: "first" | "last") {
+  return useSelector(
+    {
+      get({ get }) {
+        return get(state$)[field];
+      },
+      set({ get, set }, value) {
+        const state = get(state$);
+        set(state$, { ...state, [field]: value });
+      },
+    },
+    [state$, field]
+  );
+}
+
 const TextInput = ({ field }: { field: "first" | "last" }) => {
   const state$ = useContext(StoreContext)!;
-  const state = useWireValue(state$);
-  const value = state[field];
+  const value$ = useFieldSelector(state$, field);
+  const value = useWireValue(value$);
   return (
     <div className="field">
       {field}:{" "}
@@ -16,7 +36,7 @@ const TextInput = ({ field }: { field: "first" | "last" }) => {
         onChange={(e) => {
           const state = state$.getValue();
 
-          state$.setValue({ ...state, [field]: e.target.value });
+          value$.setValue(e.target.value);
         }}
       />
     </div>
@@ -25,8 +45,8 @@ const TextInput = ({ field }: { field: "first" | "last" }) => {
 
 const Display = ({ field }: { field: "first" | "last" }) => {
   const state$ = useContext(StoreContext)!;
-  const state = useWireValue(state$);
-  const value = state[field];
+  const value$ = useFieldSelector(state$, field);
+  const value = useWireValue(value$);
   return (
     <div className="value">
       {field}: {value}
